@@ -1,3 +1,5 @@
+import argparse
+
 # Instruções do tipo R
 from instrucao_R.instrucao import (
     montar_add,
@@ -105,13 +107,28 @@ def montador_instrucao(linha):
         raise ValueError(f"Instrução '{instrucao}' não reconhecida.")
 
 def main():
-    with open("entrada/entrada_2.asm", "r") as f:
-        linhas = f.readlines()
+    parser = argparse.ArgumentParser(description="Montador de instruções RISC-V")
+    parser.add_argument("arquivo_entrada", help="Arquivo de entrada .asm")
+    parser.add_argument("-o", "--saida", help="Arquivo de saída", default=None)
+    args = parser.parse_args()
 
+    with open(args.arquivo_entrada, "r") as f:
+        linhas = f.readlines()
+    
+    saidas = []
     for linha in linhas:
         linha = linha.strip()
         if linha == "": continue
         binario = montador_instrucao(linha)
-        print(binario)
+        saidas.append(binario)
+
+    if args.saida:
+        with open(args.saida, "w") as f:
+            for linha in saidas:
+                f.write(f"{linha}\n")
+    else:
+        for linha in saidas:
+            print(linha)
+
 
 main()
